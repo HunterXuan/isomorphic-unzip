@@ -1,6 +1,6 @@
 {
   "name": "isomorphic-unzip",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Unzipping files, simple wrap for zip.js(for browser) and yauzl(for nodejs), make the apis consistent for NodeJS/Webpack/Browserify.",
   "browser": "./zip-browser.js",
   "main": "./zip-node.js",
@@ -11,7 +11,7 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xiaoyuze88/isomorphic-unzip.git"
+    "url": "git+https://github.com/TencentWSRD/isomorphic-unzip.git"
   },
   "keywords": [
     "Javascript",
@@ -28,9 +28,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xiaoyuze88/isomorphic-unzip/issues"
+    "url": "https://github.com/TencentWSRD/isomorphic-unzip/issues"
   },
-  "homepage": "https://github.com/xiaoyuze88/isomorphic-unzip",
+  "homepage": "https://github.com/TencentWSRD/isomorphic-unzip",
   "dependencies": {
     "buffer": "^4.6.0",
     "yauzl": "^2.4.2"

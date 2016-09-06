@@ -50,6 +50,7 @@ Unzip.prototype.getEntries = function(callback, onEnd) {
 Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
   var finishedNumber = 0;
   const output = {};
+  var entryCount = 0;
 
   if (utils.isFunction(options)) {
     callback = options;
@@ -64,7 +65,7 @@ Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
 
   this.getEntries(function(error, zipfile, entry, next) {
     if (error) return callback(error);
-
+    entryCount = zipfile.entryCount;
     var findIt = whatYouNeed.some(function(rule) {
       if (utils.isThisWhatYouNeed(rule, entry.fileName)) {
         Unzip.getEntryData(zipfile, entry, function(error, buffer) {
@@ -76,7 +77,7 @@ Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
           finishedNumber++;
 
           if (finishedNumber >= whatYouNeed.length) {
-            callback(null, output);
+            callback(null, output, entryCount);
           } else {
             next();
           }
@@ -89,7 +90,7 @@ Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
 
   }, function() {
     if (finishedNumber < whatYouNeed.length) {
-      callback(null, output);
+      callback(null, output, entryCount);
     }
   });
 };

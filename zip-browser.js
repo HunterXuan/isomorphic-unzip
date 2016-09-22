@@ -56,7 +56,7 @@ Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
     });
 
     iterator(matchedEntries, options, function(error, bufferArray) {
-      callback(error, bufferArray);
+      callback(error, bufferArray, entries.length);
     });
   });
 };
@@ -64,7 +64,7 @@ Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
 Unzip.prototype.getEntries = function(callback) {
   zip.createReader(new zip.BlobReader(this.file), function(zipReader) {
     zipReader.getEntries(function(entries) {
-      callback(null, entries);
+      callback(null, entries, entries.length);
     });
   });
 };
@@ -75,7 +75,7 @@ Unzip.getEntryData = function(entry, callback) {
   var writer = new zip.BlobWriter();
 
   entry.getData(writer, function(blob) {
-    callback(null, blob);
+    callback(null, blob, entry.length);
   });
 };
 
@@ -92,7 +92,7 @@ function iterator(entries, options, callback) {
   }
 
   if (!serialize.length) {
-    callback(null, {});
+    callback(null, {}, serialize.length);
   }
 
   serialize.forEach(function(entryInfo) {
@@ -103,7 +103,7 @@ function iterator(entries, options, callback) {
         if (options.type === 'blob') {
           add(name, blob);
           if (index >= serialize.length) {
-            callback(null, output);
+            callback(null, output, serialize.length);
           }
         } else {
           blobToBuffer(blob, function(error, buffer) {
@@ -114,7 +114,7 @@ function iterator(entries, options, callback) {
             add(name, buffer);
 
             if (index >= serialize.length) {
-              callback(null, output);
+              callback(null, output, serialize.length);
             }
           });
         }

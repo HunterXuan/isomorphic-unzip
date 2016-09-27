@@ -12,7 +12,7 @@ function Unzip(file/* or blob */) {
   this.file = file;
 }
 
-Unzip.prototype.destroy = function() {
+Unzip.prototype.destroy = function () {
   this.file = null;
 };
 
@@ -21,9 +21,10 @@ Unzip.prototype.destroy = function() {
  * @param {Array<String>} whatYouNeed
  * @param {Object} options       (Optional)
  * @param {String} options.type  Currently, only support 'blob', by default it will return Buffers
+ * @param {Boolean} options.multiple If true, it will collect all the file which match the whtaYouNeed rule
  * @param callback Will be called like callback(err, buffers)
  */
-Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
+Unzip.prototype.getBuffer = function (whatYouNeed, options, callback) {
   if (!utils.isArray(whatYouNeed) || !utils.isFunction(callback)) {
     return callback(new Error('getBuffer: invalid param, expect first param to be an Array and the second param to be a callback function'));
   }
@@ -33,48 +34,57 @@ Unzip.prototype.getBuffer = function(whatYouNeed, options, callback) {
     options = {};
   }
 
-  whatYouNeed = whatYouNeed.map(function(rule) {
+  whatYouNeed = whatYouNeed.map(function (rule) {
     if (typeof rule === 'string') {
       rule = rule.split('\u0000').join('');
     }
     return rule;
   });
 
-  this.getEntries(function(error, entries) {
+  var isMultiple = options && options.multiple || false;
+
+  this.getEntries(function (error, entries) {
     if (error) return callback(error);
 
     var matchedEntries = {};
 
-    entries.forEach(function(entry) {
+    entries.forEach(function (entry) {
       // Add regexp support
-      return whatYouNeed.some(function(entryName) {
+      return whatYouNeed.some(function (entryName) {
         if (utils.isThisWhatYouNeed(entryName, entry.filename)) {
-          matchedEntries[entryName] = entry;
+          if (isMultiple) {
+            var obj = { fileName: entryName, buffer: entry };
+            matchedEntries[entryName]
+              ? matchedEntries[entryName].push(obj)
+              : (matchedEntries[entryName] = [obj]);
+          } else {
+            matchedEntries[entryName] = entry;
+          }
           return true;
         }
       });
     });
 
-    iterator(matchedEntries, options, function(error, bufferArray) {
+    iterator(matchedEntries, options, function (error, bufferArray) {
       callback(error, bufferArray, entries.length);
     });
   });
 };
 
-Unzip.prototype.getEntries = function(callback) {
-  zip.createReader(new zip.BlobReader(this.file), function(zipReader) {
-    zipReader.getEntries(function(entries) {
+Unzip.prototype.getEntries = function (callback) {
+  zip.createReader(new zip.BlobReader(this.file), function (zipReader) {
+    zipReader.getEntries(function (entries) {
       callback(null, entries, entries.length);
     });
   });
 };
 
-Unzip.getEntryData = function(entry, callback) {
+Unzip.getEntryData = function (entry, callback) {
   var writerType = 'blob';
 
   var writer = new zip.BlobWriter();
 
-  entry.getData(writer, function(blob) {
+  entry.getData(writer, function (blob) {
     callback(null, blob, entry.length);
   });
 };
@@ -95,9 +105,9 @@ function iterator(entries, options, callback) {
     callback(null, {}, serialize.length);
   }
 
-  serialize.forEach(function(entryInfo) {
-    (function(name, entry) {
-      Unzip.getEntryData(entry, function(err, blob) {
+  serialize.forEach(function (entryInfo) {
+    (function (name, entry) {
+      Unzip.getEntryData(entry, function (err, blob) {
         if (err) return callback(err);
 
         if (options.type === 'blob') {
@@ -106,7 +116,7 @@ function iterator(entries, options, callback) {
             callback(null, output, serialize.length);
           }
         } else {
-          blobToBuffer(blob, function(error, buffer) {
+          blobToBuffer(blob, function (error, buffer) {
             if (error) {
               console.error(error);
               return callback(error);

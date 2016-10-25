@@ -95,7 +95,7 @@ Unzip.prototype.getBuffer = function (whatYouNeed, options, callback) {
             finishedNumber++;
           }
 
-          if ((finishedNumber >= whatYouNeed.length && !isMutiple) || (isMutiple && currentIndex >= entryCount)) {
+          if (finishedNumber >= whatYouNeed.length && !isMutiple) {
             callback(null, output, entryCount);
           } else {
             next();
@@ -108,7 +108,7 @@ Unzip.prototype.getBuffer = function (whatYouNeed, options, callback) {
     if (!findIt) next();
 
   }, function () {
-    if (finishedNumber < whatYouNeed.length) {
+    if ((finishedNumber < whatYouNeed.length) || (isMutiple && currentIndex >= entryCount)) {
       callback(null, output, entryCount);
     }
   });

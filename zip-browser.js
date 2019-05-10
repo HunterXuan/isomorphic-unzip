@@ -76,7 +76,7 @@ Unzip.prototype.getEntries = function (callback) {
     zipReader.getEntries(function (entries) {
       callback(null, entries, entries.length);
     });
-  });
+  }, callback);
 };
 
 Unzip.getEntryData = function (entry, callback) {

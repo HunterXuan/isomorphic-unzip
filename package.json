@@ -1,6 +1,6 @@
 {
   "name": "@tencent/isomorphic-unzip",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Unzipping files, simple wrap for zip.js(for browser) and yauzl(for nodejs), make the apis consistent for NodeJS/Webpack/Browserify.",
   "browser": "./zip-browser.js",
   "main": "./zip-node.js",

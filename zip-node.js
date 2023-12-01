@@ -35,6 +35,7 @@ Unzip.prototype.getEntries = function (callback, onEnd) {
       if (utils.isFunction(onEnd)) {
         onEnd();
       }
+      zipfile.close();
     });
 
     next();

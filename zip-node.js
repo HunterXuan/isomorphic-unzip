@@ -77,6 +77,7 @@ Unzip.prototype.getBuffer = function (whatYouNeed, options, callback) {
         Unzip.getEntryData(zipfile, entry, function (error, buffer) {
           if (error) {
             callback(error);
+            zipfile.close();
             return;
           }
 
@@ -98,6 +99,7 @@ Unzip.prototype.getBuffer = function (whatYouNeed, options, callback) {
 
           if (finishedNumber >= whatYouNeed.length && !isMutiple) {
             callback(null, output, entryCount);
+            zipfile.close();
           } else {
             next();
           }
